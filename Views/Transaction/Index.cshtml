@@ -27,6 +27,10 @@
     .btn-sm {
         border-radius: 6px;
     }
+
+    .open-create-btn {
+        margin-bottom: 1.5rem;
+    }
 </style>
 
 <div class="stat-card">
@@ -35,43 +39,74 @@
     <div><strong>🧾 Баланс:</strong> @ViewBag.Balance.ToString("N0") сум</div>
 </div>
 
-    <h3 class="mb-3">@ViewData["Title"]</h3>
+<h3 class="mb-3">@ViewData["Title"]</h3>
 
-    <a asp-action="Create" class="btn btn-success mb-3">+ Новая запись</a>
+<!-- Modal trigger -->
+<button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal">+ Новая запись</button>
 
-    <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle">
-            <thead class="table-light">
-            <tr>
-                <th>Дата</th>
-                <th>Тип</th>
-                <th>Категория</th>
-                <th>Сумма</th>
-                <th>Примечание</th>
-                <th>Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var item in Model)
-            {
-                var rowClass = item.IsIncome ? "income-row" : "expense-row";
-                <tr class="@rowClass">
-                    <td>@item.Date.ToShortDateString()</td>
-                    <td>
-                        <span class="fw-bold @(item.IsIncome ? "text-success" : "text-danger")">
-                            @(item.IsIncome ? "Доход" : "Расход")
-                        </span>
-                    </td>
-                    <td>@item.Category</td>
-                    <td>@item.Amount.ToString("N0")</td>
-                    <td>@item.Comment</td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary me-1">Редактировать</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Удалить</a>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
+<!-- Modal structure -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Добавить новый Доход/Расход</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body" id="createFormContainer">
+                <!-- AJAX orqali forma yuklanadi -->
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
+<!-- Ro'yxat qismi -->
+<div class="table-responsive">
+    <table class="table table-hover table-bordered align-middle">
+        <thead class="table-light">
+        <tr>
+            <th>Дата</th>
+            <th>Тип</th>
+            <th>Категория</th>
+            <th>Сумма</th>
+            <th>Примечание</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody id="transactionList">
+        @Html.Partial("_TransactionListPartial", Model)
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        // Modal ochilganda forma yuklanadi
+        document.getElementById('createModal').addEventListener('show.bs.modal', async function () {
+            const container = document.getElementById("createFormContainer");
+            const html = await fetch("/Transaction/GetCreateForm").then(res => res.text());
+            container.innerHTML = html;
+
+            // Forma yuborish
+            document.getElementById("ajaxCreateForm").addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const response = await fetch("/Transaction/AjaxCreate", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const listHtml = await fetch("/Transaction/TransactionList").then(res => res.text());
+                    document.getElementById("transactionList").innerHTML = listHtml;
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('createModal'));
+                    modal.hide();
+                } else {
+                    alert("❌ Xatolik. Iltimos, ma’lumotlarni tekshiring.");
+                }
+            });
+        });
+    </script>
+}

@@ -33,7 +33,7 @@
     <div class="card-custom">
         <h3 class="mb-4 text-center">@ViewData["Title"]</h3>
 
-        <form asp-action="Create" method="post">
+        <form id="ajaxCreateForm">
             <div class="mb-3">
                 <label asp-for="Date" class="form-label"></label>
                 <input asp-for="Date" type="date" class="form-control" />
@@ -78,5 +78,25 @@
 </div>
 
 @section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        document.getElementById("ajaxCreateForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            const response = await fetch("/Transaction/AjaxCreate", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                if (window.opener) {
+                    window.opener.postMessage("transaction-added", "*");
+                }
+                
+                window.location.href = "/Transaction/Index";
+            } else {
+                alert("❌ Xatolik yuz berdi. Ma’lumotlar to‘liq kiritilganligiga ishonch hosil qiling.");
+            }
+        });
+    </script>
 }

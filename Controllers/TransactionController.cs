@@ -42,6 +42,45 @@ namespace MyHomeBudget.Controllers
 
             return View(transactions);
         }
+        
+        
+        [HttpPost]
+        public IActionResult AjaxCreate(Transaction transaction)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return Unauthorized();
+
+            if (ModelState.IsValid)
+            {
+                transaction.UserId = userId.Value;
+                _context.Transactions.Add(transaction);
+                _context.SaveChanges();
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
+        public IActionResult TransactionList()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return Unauthorized();
+
+            var transactions = _context.Transactions
+                .Where(t => t.UserId == userId)
+                .OrderByDescending(t => t.Date)
+                .ToList();
+
+            return PartialView("_TransactionListPartial", transactions);
+        }
+
+        public IActionResult GetCreateForm()
+        {
+            return PartialView("_CreateFormPartial", new Transaction());
+        }
+
 
         // ✅ GET: Create
         public IActionResult Create()

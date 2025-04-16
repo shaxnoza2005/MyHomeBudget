@@ -1,0 +1,21 @@
+@model List<MyHomeBudget.Models.Transaction>
+
+@foreach (var item in Model)
+{
+    var rowClass = item.IsIncome ? "income-row" : "expense-row";
+    <tr class="@rowClass">
+        <td>@item.Date.ToShortDateString()</td>
+        <td>
+            <span class="fw-bold @(item.IsIncome ? "text-success" : "text-danger")">
+                @(item.IsIncome ? "Доход" : "Расход")
+            </span>
+        </td>
+        <td>@item.Category</td>
+        <td>@item.Amount.ToString("N0")</td>
+        <td>@item.Comment</td>
+        <td>
+            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary me-1">Редактировать</a>
+            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Удалить</a>
+        </td>
+    </tr>
+}
