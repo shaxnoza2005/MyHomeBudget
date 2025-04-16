@@ -1,0 +1,114 @@
+﻿@model List<MyHomeBudget.Models.Transaction>
+@{
+    ViewData["Title"] = "Главная страница";
+    var userName = Context.Session.GetString("UserName");
+}
+
+<style>
+    .dashboard-wrapper {
+        background: linear-gradient(135deg, #e0f2f1, #e3f2fd);
+        min-height: 100vh;
+        padding: 2rem;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card-custom {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        padding: 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .stat-card {
+        background-color: white;
+        border-left: 6px solid #7e57c2;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+        .stat-card h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .stat-card p {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin: 0;
+            color: #2e7d32;
+        }
+
+    .btn-purple {
+        background-color: #7e57c2;
+        border-color: #7e57c2;
+        color: white;
+    }
+
+        .btn-purple:hover {
+            background-color: #5e35b1;
+            border-color: #5e35b1;
+        }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="card-custom">
+        <h2 class="text-center mb-4">Здравствуйте, @userName!</h2>
+
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="stat-card">
+                    <h4>💰 Общий доход</h4>
+                    <p>@ViewBag.Income.ToString("N0") сум</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="stat-card">
+                    <h4>💸 Общие расходы</h4>
+                    <p>@ViewBag.Expense.ToString("N0") сум</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="stat-card">
+                    <h4>🧾 Остаток</h4>
+                    <p>@ViewBag.Balance.ToString("N0") сум</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mb-3">
+            <a class="btn btn-purple" href="/Transaction/Create">+ Добавить</a>
+        </div>
+
+        <h5 class="mb-3">🕓 Последние транзакции</h5>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Тип</th>
+                    <th>Категория</th>
+                    <th>Сумма</th>
+                    <th>Примечание</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Take(5))
+                {
+                    <tr>
+                        <td>@item.Date.ToShortDateString()</td>
+                        <td>@(item.IsIncome ? "Доход" : "Расход")</td>
+                        <td>@item.Category</td>
+                        <td>@item.Amount.ToString("N0")</td>
+                        <td>@item.Comment</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+﻿@model List<MyHomeBudget.Models.Transaction>
+
+@{
+    ViewData["Title"] = " Список доходов / расходов";
+}
+
+<style>
+    .stat-card {
+        background: #e3f2fd;
+        padding: 1rem 2rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.1rem;
+    }
+
+    .income-row {
+        background-color: #e8f5e9 !important;
+    }
+
+    .expense-row {
+        background-color: #ffebee !important;
+    }
+
+    .btn-sm {
+        border-radius: 6px;
+    }
+</style>
+
+<div class="stat-card">
+    <div><strong>💰 Общий доход:</strong> @ViewBag.Income.ToString("N0") сум</div>
+    <div><strong>💸 Общие расходы:</strong> @ViewBag.Expense.ToString("N0") сум</div>
+    <div><strong>🧾 Баланс:</strong> @ViewBag.Balance.ToString("N0") сум</div>
+</div>
+
+    <h3 class="mb-3">@ViewData["Title"]</h3>
+
+    <a asp-action="Create" class="btn btn-success mb-3">+ Новая запись</a>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>Дата</th>
+                <th>Тип</th>
+                <th>Категория</th>
+                <th>Сумма</th>
+                <th>Примечание</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                var rowClass = item.IsIncome ? "income-row" : "expense-row";
+                <tr class="@rowClass">
+                    <td>@item.Date.ToShortDateString()</td>
+                    <td>
+                        <span class="fw-bold @(item.IsIncome ? "text-success" : "text-danger")">
+                            @(item.IsIncome ? "Доход" : "Расход")
+                        </span>
+                    </td>
+                    <td>@item.Category</td>
+                    <td>@item.Amount.ToString("N0")</td>
+                    <td>@item.Comment</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary me-1">Редактировать</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+

@@ -1,0 +1,85 @@
+﻿@model MyHomeBudget.Models.Transaction
+
+@{
+    ViewData["Title"] = "Редактировать";
+}
+
+<style>
+    .form-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+        padding-top: 2rem;
+    }
+
+    .card-custom {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        padding: 2rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: end;
+        gap: 10px;
+    }
+</style>
+
+<div class="form-wrapper">
+    <div class="card-custom">
+        <h3 class="mb-4 text-center">@ViewData["Title"]</h3>
+
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="UserId" />
+
+            <div class="mb-3">
+                <label asp-for="Date" class="form-label"></label>
+                <input asp-for="Date" type="date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="IsIncome" class="form-label"></label>
+                <select asp-for="IsIncome" class="form-control">
+                    <option value="true">Доход</option>
+                    <option value="false">Расход</option>
+                </select>
+                <span asp-validation-for="IsIncome" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Category" class="form-label"></label>
+                <select asp-for="Category" class="form-control"
+                        asp-items="Html.GetEnumSelectList<MyHomeBudget.Models.CategoryType>()">
+                </select>
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Amount" class="form-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Comment" class="form-label"></label>
+                <textarea asp-for="Comment" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Comment" class="text-danger"></span>
+            </div>
+
+            <div class="btn-group mt-4">
+                <a asp-action="Index" class="btn btn-secondary">Назад</a>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

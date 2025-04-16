@@ -1,0 +1,22 @@
+﻿@model MyHomeBudget.Models.Transaction
+
+@{
+    ViewData["Title"] = "Удалить запись";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h4>Вы действительно хотите удалить эту запись?</h4>
+
+<div>
+    <p><strong>Дата:</strong> @Model.Date.ToShortDateString()</p>
+    <p><strong>Тип:</strong> @(Model.IsIncome ? "Доход" : "Расход")</p>
+    <p><strong>Категория:</strong> @Model.Category</p>
+    <p><strong>Сумма:</strong> @Model.Amount</p>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Да, удалить</button>
+    <a asp-action="Index" class="btn btn-secondary">Нет, назад</a>
+</form>
